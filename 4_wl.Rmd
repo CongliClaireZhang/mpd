@@ -1,0 +1,31 @@
+---
+title: "Multilingual Development of Multiligual Learners"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      R.options = list(width = 90),
+                      include = FALSE)
+```
+
+
+```{r}
+# if (!require('devtools')) install.packages('devtools')
+# devtools::install_github('rstudio/leaflet')
+```
+
+
+```{r, layout="l-screen-inset shaded", include = TRUE}
+
+```
+
+```{css, echo=FALSE}
+/* Whole document: */
+body{
+  font-family: Helvetica;
+  font-size: 12pt;
+}
+```
+
+## The Long-Term Goal of Multilingualism and Multiliteracy for Multiligual Learners
