@@ -1,12 +1,24 @@
-name: "0_0_dashboard"
 title: "MPD Dashboard"
-description: |
-  MPD Dashboard
 output_dir: "docs"
 navbar:
-  right:
+  left:
     - text: "Home"
       href: index.html
-    - text: "About"
-      href: about.html
-output: distill::distill_article
+    - text: "ML Population"
+      href: 1_el.html
+    - text: "ML Demographics"
+      href: 2_demo.html
+    - text: "English Development"
+      href: 3_eld.html
+    - text: "Multilingual"
+      href: 4_wl.html
+    - text: "Achievement"
+      href: 5_assess.html
+
+  right:
+    - text: "ML Resources"
+      href: z_resource.html
+  
+output: 
+  html_document:
+    theme: flatly

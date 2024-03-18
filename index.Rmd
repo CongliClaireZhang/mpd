@@ -1,18 +1,40 @@
 ---
-title: "MPD Dashboard"
-description: |
-  Welcome to the website. I hope you enjoy it!
-site: distill::distill_website
+title: "Welcome to MPD Dashboard"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-
-# Learn more about creating websites with Distill at:
-# https://rstudio.github.io/distill/website.html
-
-# Learn more about publishing to GitHub Pages at:
-# https://rstudio.github.io/distill/publish_website.html#github-pages
-
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      R.options = list(width = 90),
+                      include = FALSE)
 ```
+
+
+```{r}
+# if (!require('devtools')) install.packages('devtools')
+# devtools::install_github('rstudio/leaflet')
+```
+
+
+```{r, layout="l-screen-inset shaded", include = TRUE}
+# layout = "1-page"
+```
+
+```{css, echo=FALSE}
+/* Whole document: */
+body{
+  font-family: Helvetica;
+  font-size: 12pt;
+}
+```
+
+Welcome to MPD Dashboard: the data home of Multilingual Learners at SFUSD.
+
+In the United States, English Learners (ELs) are a growing body of K-12 student population. Under the *Every Student Succeeds Act*, states must annually assess the English language proficiency of ELs and have accountability systems in position to ensure the equitable education outcomes for ELs. 
+
+At SFUSD, *An asset-based mindset towards MLs* is the super power of SFUSD educators and we refer to ELs as **Multilingual Learners** (MLs) because we believe that multilingualism and multiliteracy is the outcome of our education for this unique student group.
+
+**"Serving Multilingual Learners is a central responsibility of each and every educator. Effectively serving this diverse group of learners fosters excellence for all students because language is foundational to learning and development in all students." ([SFUSD Roadmap for Multilingual Learner Achievement and Success](https://drive.google.com/file/d/1U6bHk_8so1Egx9f5CF8izHgYJlp-MzTG/view))**
+
+
 
