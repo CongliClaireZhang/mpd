@@ -1,5 +1,5 @@
 ---
-title: "Student Population and Multilingual Learners"
+title: "SFUSD Multilingual Learners"
 ---
 
 ```{r setup, include=FALSE}
@@ -97,7 +97,7 @@ At SFUSD, more than half of our students live in households with a home language
 
 As of `r Sys.Date()`^[Data source: SFUSD Synergy data system], there are a total of `r nrow(mlml)` ELs actively enrolled in SFUSD, making up to `r percentage(nrow(mlml)/nrow(ml))` of the student population^[Student population: the total of students in SFUSD schools excluding Charter schools]. Below is a breakdown of the proportions of four major English Language Acquisition Status, or ELAS: EL, RFEP, IFEP, and EO.
 
-```{r fig.height = 3, fig.width = 8}
+```{r fig.height = 2, fig.width = 8}
 ml %>%
   mutate(x = "SFUSD") %>%
   group_by(ELAS) %>% 
@@ -110,7 +110,7 @@ ml %>%
   geom_text(aes(label = paste0(Percentage, "%")),
             position = position_stack(vjust = 0.5)) +
   scale_fill_brewer(palette = "Set2") +
-  theme_bw(base_size = 14) +
+  theme_bw(base_size = 12) +
   labs(fill = "ELAS:  ") +
   theme(plot.title = element_text(size = 14),
         plot.subtitle = element_text(size = 10),
@@ -151,14 +151,38 @@ plot_elas <- function(df){
     coord_flip() 
   ggplotly(p)
 }
+
+plot_elas_1 <- function(df){
+  p <- df %>% 
+    left_join(
+      df %>% 
+        group_by(School) %>%
+        mutate(share = Enrollment/sum(Enrollment)) %>% 
+        ungroup() %>% 
+        filter(ELAS == "EL") %>% 
+        select(School, share)
+      ) %>% 
+    mutate(share = case_when(is.na(share) ~ 0,
+                             .default = share),
+           School = fct_reorder(School, share)) %>% 
+    ggplot(aes(School, Enrollment, fill = ELAS)) + 
+    geom_col(position = "fill") +
+    #geom_text(aes(label = scales::percent(share))) +
+    scale_fill_brewer(palette = "Set3") +
+    scale_y_continuous(labels = scales::percent) +
+    theme_bw(base_size = 12) +
+    theme(axis.title.y=element_blank(),
+          axis.title.x=element_blank(),
+          legend.position="none") +
+    coord_flip() 
+  ggplotly(p)
+}
 ```
 
 
 The following five plots provide a closer look at the up-to-date student enrollment by ELAS at each school. Each plot shows schools in each of the five cohorts: high schools, middle schools, K-8 schools, elementary schools, and early elementary schools. 
 
-Simply hove over a specific proportion of the colored bar of a specific school to find out the number of students in detail. 
-
-Note that in each plot, every bar consists of four proportions of ELAS within each school and the bars are ordered by the proportion of ELs from the highest to the lowest.
+Note that in each plot, each bar consists of the proportions of four ELAS groups within each school. **Also note that the bars are ordered by the proportion of ELs (which is the first proportion in the bar) from the highest to the lowest**. Do not rely on the color theme, hove over a specific proportion of the colored bar to find out the specific ELAS group and student counts.
 
 
 ```{r}
@@ -218,16 +242,15 @@ ml %>%
   ungroup() %>% 
   select(School, ELAS, Enrollment) %>% 
   unique() %>% 
-  plot_elas()
+  plot_elas_1()
 ```
-
 
 
 # Multilingual Learner Typology (EL Typology)
 
-EL population is diverse in terms of where they are on the spectrum of English language proficiency. EL typology is designed to identify different subgroups of ELs so that we can provide research-based multilingual programs and interventions that meet their unique learning needs. 
+EL population is diverse in terms of where they are on the spectrum toward English language proficiency. EL typology is designed to identify different subgroups of ELs so that we can provide research-based multilingual programs and interventions that meet their unique learning needs. 
 
-Please refer to [this slide](https://docs.google.com/presentation/d/12GjkZb5EjsPEqNjqSC97w08JtjseHqMAqfdzIRYsx1E/edit#slide=id.g288282fe4fd_0_4) to understand more about how SFUSD identify different typologies of ELs. Here is a brief glossary of EL Typology categories used in this website:
+Please refer to [this slide](https://docs.google.com/presentation/d/12GjkZb5EjsPEqNjqSC97w08JtjseHqMAqfdzIRYsx1E/edit#slide=id.g288282fe4fd_0_4) to understand more about how SFUSD identify different typologies of ELs. Here is a brief glossary of EL Typology categories being used in this website:
 
  - Newcomer: EL born outside of the US who has been enrolled as an EL for 3 years or less
  - NewEL: EL born in the US who has been enrolled as an EL for 3 years or less
@@ -235,9 +258,9 @@ Please refer to [this slide](https://docs.google.com/presentation/d/12GjkZb5EjsP
  - PTEL: EL in grades 3-12 who has been enrolled as an EL for 4-5 years but has not achieved English proficiency level nor ELA grade-specific standard in State tests 
  - LTEL: EL being enrolled as an EL for 6 or more years without making progress 
 
-Below is a breakdown of the proportions of the five EL Typology groups at SFUSD:
+Below is a breakdown of the proportions of the five EL Typology groups at SFUSD, as of `r Sys.Date()`:
 
-```{r fig.height = 3, fig.width = 8}
+```{r fig.height = 2, fig.width = 8}
 mlml %>%
   mutate(x = "SFUSD") %>%
   group_by(Typology) %>% 
@@ -250,7 +273,7 @@ mlml %>%
   geom_text(aes(label = paste0(Percentage, "%")),
             position = position_stack(vjust = 0.5)) +
   scale_fill_brewer(palette = "Set1") +
-  theme_bw(base_size = 14) +
+  theme_bw(base_size = 12) +
   labs(fill = "EL Typology: ") +
   theme(plot.title = element_text(size = 14),
         plot.subtitle = element_text(size = 10),
@@ -320,13 +343,41 @@ plot_typo_2 <- function(df){
     coord_flip() 
   ggplotly(p)
 }
+
+# reorder typology plot by Newcomer
+plot_typo_3 <- function(df){
+  p <- df %>% 
+    left_join(
+      df %>% 
+        group_by(School) %>%
+        mutate(share = Enrollment/sum(Enrollment)) %>% 
+        ungroup() %>% 
+        filter(Typology == "Newcomer") %>% 
+        select(School, share)
+      ) %>% 
+    mutate(share = case_when(is.na(share) ~ 0,
+                             .default = share),
+           School = fct_reorder(School, share)) %>% 
+    ggplot(aes(School, Enrollment, fill = Typology)) + 
+    geom_col(position = "fill") +
+    #geom_text(aes(label = scales::percent(share))) +
+    scale_fill_brewer(palette = "Set3") +
+    scale_y_continuous(labels = scales::percent) +
+    theme_bw(base_size = 12) +
+    theme(axis.title.y=element_blank(),
+          axis.title.x=element_blank(),
+          legend.position="none") +
+    coord_flip() 
+  ggplotly(p)
+}
 ```
 
 
-Similar to the previous section, below five plots provide a closer look at the up-to-date student enrollment by EL Typology at each school. Hove over a specific proportion of the colored bar of a specific school to find out the number of students in detail. 
+Similar to the previous section, below five plots provide a closer look at the up-to-date student enrollment by EL Typology at each school. 
 
-Note that for the three cohorts: high schools, middle schools, and K-8, the bars are ordered by the proportion of LETLs from the highest to the lowest, whereas for the other two cohorts: elementary and early elementary schools, the bars are ordered by the proportion of Newcomers.
+Note that for the following three cohorts, high schools, middle schools, and K-8, **the bars are ordered by the proportion of LTELs (which is the last proportion in the bar) from the highest to the lowest**. Do not rely on the color theme, hove over a specific proportion of the colored bar to find out the specific ELAS group and student counts.
 
+Note that for the following three cohorts, high schools, middle schools, and K-8, the bars are ordered by the first proportion - the proportion of LETLs from the highest to the lowest:
 
 ```{r}
 mlml %>%
@@ -364,6 +415,8 @@ mlml %>%
 ```
 
 
+For the following two cohorts, elementary and early elementary schools, the bars are ordered by the first proportion - the proportion of Newcomers from the highest to the lowest:
+
 ```{r fig.height = 12, fig.width = 9}
 mlml %>%
   filter(grepl(" ES", School)) %>%
@@ -384,7 +437,7 @@ mlml %>%
   ungroup() %>% 
   select(School, Typology, Enrollment) %>% 
   unique() %>% 
-  plot_typo_2()
+  plot_typo_3()
 ```
 
 

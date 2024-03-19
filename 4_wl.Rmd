@@ -28,4 +28,4 @@ body{
 }
 ```
 
-## The Long-Term Goal of Multilingualism and Multiliteracy for Multiligual Learners
+The Long-Term Goal of Multilingualism and Multiliteracy for Multiligual Learners
