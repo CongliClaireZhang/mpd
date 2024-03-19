@@ -63,18 +63,16 @@ ml <- read_xlsx(here("./data/ml.xlsx")) %>%
                                   "IFEP", 
                                   "RFEP", 
                                   "EL", 
-                                  "EL"))) %>% 
+                                  "EL")),
+         grade = factor(grade,
+                        levels = c("PK", "TK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "5th YR Senior"),
+                        labels = c("PK-K", "PK-K", "PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "12"))) %>% 
   drop_na() %>% 
   rename(School = sch,
          ELAS = elas,
          Grade = grade,
          Typology = typo)
-
-# Check the n of schools within each cohort
-fooo <- ml %>% 
-filter(grepl("HS", School)) %>% # cohorts: "HS", "MS", " ES", "EES", "K-8"
-select(School) %>% 
-unique()
+# mytable1(ml$Grade)
 
 # EL only
 mlml <- ml %>% 
@@ -108,7 +106,8 @@ ml %>%
   ggplot(aes(x, Percentage, fill = ELAS)) +
   geom_col(width = 0.4) +
   geom_text(aes(label = paste0(Percentage, "%")),
-            position = position_stack(vjust = 0.5)) +
+            position = position_stack(vjust = 0.5),
+            alpha = 0.7) +
   scale_fill_brewer(palette = "Set2") +
   theme_bw(base_size = 12) +
   labs(fill = "ELAS:  ") +
@@ -271,7 +270,8 @@ mlml %>%
   ggplot(aes(x, Percentage, fill = Typology)) +
   geom_col(width = 0.4, alpha = 0.7) +
   geom_text(aes(label = paste0(Percentage, "%")),
-            position = position_stack(vjust = 0.5)) +
+            position = position_stack(vjust = 0.5),
+            alpha = 0.7) +
   scale_fill_brewer(palette = "Set1") +
   theme_bw(base_size = 12) +
   labs(fill = "EL Typology: ") +
@@ -285,7 +285,40 @@ mlml %>%
   guides(fill = guide_legend(title = "", nrow = 1, byrow = TRUE)) +
   coord_flip() +
   guides(fill = guide_legend(reverse=TRUE))
+```
 
+Certain EL Typologies are more representative than others at a certain grade level, indicating that multilingual pathway programs and interventions need to be customized by grade levels to better serve ELs' learning needs. Looking further into EL Typologies by grade level:
+
+```{r fig.height = 7, fig.width = 9}
+mlml %>%
+  group_by(Grade) %>% 
+  mutate(n1 = n()) %>% 
+  ungroup() %>% 
+  group_by(Grade, Typology) %>% 
+  mutate(n2 = n(),
+         Percentage = round(n2/n1, 4) * 100) %>% 
+  ungroup() %>% 
+  select(Grade, Percentage, Typology) %>% 
+  unique() %>% 
+  ggplot(aes(Grade, Percentage, fill = Typology)) +
+  geom_col(alpha = 0.7) +
+  geom_text(aes(label = paste0(Percentage, "%"), 
+                vjust=rep(c(0.5, -0.5), length.out=length(Percentage))),
+            alpha = 0.5,
+            position = position_stack(vjust = 0.4)) +
+  scale_fill_brewer(palette = "Set1")  +
+  theme_bw(base_size = 12) +
+  labs(fill = "EL Typology: ") +
+  theme(plot.title = element_text(size = 14),
+        plot.subtitle = element_text(size = 10),
+        legend.position = "bottom",
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank()) +
+  guides(fill = guide_legend(title = "", nrow = 1, byrow = TRUE)) +
+  coord_flip() +
+  guides(fill = guide_legend(reverse=TRUE)) 
 ```
 
 

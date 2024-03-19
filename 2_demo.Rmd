@@ -5,8 +5,30 @@ title: "Demographics of Multiligual Learners"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
-                      R.options = list(width = 90),
-                      include = FALSE)
+                      include = TRUE,
+                      message = FALSE,
+                      fig.width = 8)
+
+pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly)
+percentage <- function(x){
+  paste(round(100*x, 2), "%", sep="")
+}
+
+mytable1 <- function(x){
+  addmargins(table(x, exclude = NULL, deparse.level = 0))
+}
+
+mytable2 <- function(x, y){
+  addmargins(table(x, y, exclude = NULL, deparse.level = 0))
+}
+
+checkdup <- function(df){
+  df %>% group_by(student_no) %>% filter(n() > 1) %>% ungroup() %>% arrange(student_no)
+}
+
+checkna <- function(df){
+  sapply(df, function(x){sum(is.na(x))})
+}
 ```
 
 
@@ -27,3 +49,37 @@ body{
   font-size: 12pt;
 }
 ```
+
+
+```{r}
+# ml <- read_xlsx(here("./data/ml.xlsx")) %>%
+#   mutate(elas = factor(elas,
+#                        levels = c("English or American Sign Language Only", 
+#                                   "Initial Fluent English Proficient", 
+#                                   "Reclassified Fluent English Proficient",
+#                                   "English Learner", 
+#                                   "Adult English Learner"),
+#                        labels = c("EO",
+#                                   "IFEP", 
+#                                   "RFEP", 
+#                                   "EL", 
+#                                   "EL"))) %>% 
+#   drop_na() %>% 
+#   mutate(typo = factor(typo,
+#                        levels = c("EL 6+ Yrs LTEL", 
+#                                   "EL 4-5 Yrs Potential LTEL", 
+#                                   "EL 4+ Yrs On Track", 
+#                                   "EL 0-3 Yrs", 
+#                                   "EL 0-3 Yrs Newcomer"),
+#                        labels = c("LTEL", 
+#                                   "PLTEL", 
+#                                   "ELOT", 
+#                                   "NewEL", 
+#                                   "Newcomer")),
+#          elas = ifelse())
+#   rename(School = sch,
+#          ELAS = elas,
+#          Grade = grade,
+#          Typology = typo)
+```
+
