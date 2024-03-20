@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       fig.width = 8)
 
-pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly)
+pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly, cowplot)
 percentage <- function(x){
   paste(round(100*x, 2), "%", sep="")
 }
@@ -66,7 +66,13 @@ ml <- read_xlsx(here("./data/ml.xlsx")) %>%
                                   "EL")),
          grade = factor(grade,
                         levels = c("PK", "TK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "5th YR Senior"),
-                        labels = c("PK-K", "PK-K", "PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "12"))) %>% 
+                        labels = c("PK-K", "PK-K", "PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "12")),
+         Cohort = case_when(grepl("HS", sch) ~ "HS",
+                            grepl("MS", sch) ~ "MS",
+                            grepl("K-8", sch) ~ "K-8",
+                            grepl(" ES", sch) ~ "ES",
+                            grepl("EES|Pre-K|PreK|EED|Prek", sch) ~ "PreES")) %>% 
+  # foo <- ml %>% select(Cohort, sch) %>% unique()
   drop_na() %>% 
   rename(School = sch,
          ELAS = elas,
@@ -93,7 +99,7 @@ mlml <- ml %>%
 
 At SFUSD, more than half of our students live in households with a home language other than English, which include English Learner students (ELs), Re-designated Fluent English Proficient students (RFEPs), and Initial Fluent English Proficient students (IFEPs)^[Journey from EL to RFEP: https://drive.google.com/file/d/1XUxLCgTnHKA_DfFEQrCGvngFmXooIBx4/view]. In contrast, English or American Sign Language Only students (EOs) are less than half.
 
-As of `r Sys.Date()`^[Data source: SFUSD Synergy data system], there are a total of `r nrow(mlml)` ELs actively enrolled in SFUSD, making up to `r percentage(nrow(mlml)/nrow(ml))` of the student population^[Student population: the total of students in SFUSD schools excluding Charter schools]. Below is a breakdown of the proportions of four major English Language Acquisition Status, or ELAS: EL, RFEP, IFEP, and EO.
+As of `r Sys.Date()`^[Data source: SFUSD Synergy data system], there are a total of `r nrow(mlml)` ELs actively enrolled in SFUSD, making up to `r percentage(nrow(mlml)/nrow(ml))` of the student population^[Student population: the total of students in SFUSD schools excluding Charter schools and Central Enrollment students who have yet enroll in a particular school]. Below is a breakdown of the proportions of four major English Language Acquisition Status, or ELAS: EL, RFEP, IFEP, and EO.
 
 ```{r fig.height = 2, fig.width = 8}
 ml %>%
@@ -111,9 +117,7 @@ ml %>%
   scale_fill_brewer(palette = "Set2") +
   theme_bw(base_size = 12) +
   labs(fill = "ELAS:  ") +
-  theme(plot.title = element_text(size = 14),
-        plot.subtitle = element_text(size = 10),
-        legend.position = "bottom",
+  theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
@@ -122,6 +126,44 @@ ml %>%
   coord_flip() +
   guides(fill = guide_legend(reverse=TRUE))
 ```
+
+
+Let's take a closer look at ELAS enrollment at each of the five cohorts: high schools, middle schools, K-8 schools, elementary schools, and pre elementary schools (early elementary, pre-K, etc.).
+
+```{r fig.width = 8, fig.height = 8}
+ml %>%
+  group_by(Cohort) %>% 
+  mutate(n1 = n()) %>% 
+  ungroup() %>% 
+  group_by(Cohort, ELAS) %>% 
+  mutate(n2 = n(),
+         Percentage = round(n2/n1, 4) * 100) %>% 
+  ungroup() %>% 
+  select(Cohort, Percentage, ELAS) %>% 
+  unique() %>% 
+  ggplot(aes(Cohort, Percentage, fill = ELAS)) +
+  geom_col(alpha = 0.7) +
+  geom_text(aes(label = paste0(Percentage, "%")),
+            alpha = 0.5,
+            position = position_stack(vjust = 0.6)) +
+  scale_fill_brewer(palette = "Paired")  +
+  theme_minimal() +
+  labs(fill = "ELAS: ") +
+  theme(legend.position = "bottom",
+        axis.title.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank()) +
+  guides(fill = guide_legend(title = "", nrow = 1, byrow = TRUE)) +
+  coord_flip() +
+  guides(fill = guide_legend(reverse=TRUE)) +
+  coord_polar() +
+  panel_border(remove = TRUE)
+```
+
+
+The following five plots provide a closer look at the up-to-date student enrollment by ELAS at each school. Each plot shows schools in each of the five cohorts. 
+
+Note that in each plot, each bar consists of the proportions of four ELAS groups within each school. **Also note that the bars are ordered by the proportion of ELs (which is the first proportion in the bar) from the highest to the lowest**. Do not rely on the color theme, hove over a specific proportion of the colored bar to find out the specific ELAS group and student counts.
 
 
 ```{r}
@@ -179,14 +221,9 @@ plot_elas_1 <- function(df){
 ```
 
 
-The following five plots provide a closer look at the up-to-date student enrollment by ELAS at each school. Each plot shows schools in each of the five cohorts: high schools, middle schools, K-8 schools, elementary schools, and early elementary schools. 
-
-Note that in each plot, each bar consists of the proportions of four ELAS groups within each school. **Also note that the bars are ordered by the proportion of ELs (which is the first proportion in the bar) from the highest to the lowest**. Do not rely on the color theme, hove over a specific proportion of the colored bar to find out the specific ELAS group and student counts.
-
-
 ```{r}
 ml %>%
-  filter(grepl("HS", School)) %>%
+  filter(Cohort == "HS") %>%
   group_by(School, ELAS) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -198,7 +235,7 @@ ml %>%
 
 ```{r}
 ml %>%
-  filter(grepl("MS", School)) %>%
+  filter(Cohort == "MS") %>%
   group_by(School, ELAS) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -211,7 +248,7 @@ ml %>%
 
 ```{r fig.height = 3.5}
 ml %>%
-  filter(grepl("K-8", School)) %>%
+  filter(Cohort == "K-8") %>%
   group_by(School, ELAS) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -223,7 +260,7 @@ ml %>%
 
 ```{r fig.height = 12, fig.width = 9}
 ml %>%
-  filter(grepl(" ES", School)) %>%
+  filter(Cohort == "ES") %>%
   group_by(School, ELAS) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -235,7 +272,7 @@ ml %>%
 
 ```{r fig.height = 3.5}
 ml %>%
-  filter(grepl("EES", School)) %>%
+  filter(Cohort == "PreES") %>%
   group_by(School, ELAS) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -306,7 +343,7 @@ mlml %>%
                 vjust=rep(c(0.5, -0.5), length.out=length(Percentage))),
             alpha = 0.5,
             position = position_stack(vjust = 0.4)) +
-  scale_fill_brewer(palette = "Set1")  +
+  scale_fill_brewer(palette = "Paired")  +
   theme_bw(base_size = 12) +
   labs(fill = "EL Typology: ") +
   theme(plot.title = element_text(size = 14),
