@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       fig.width = 8)
 
-pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly, cowplot)
+pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly, cowplot, geomtextpath)
 percentage <- function(x){
   paste(round(100*x, 2), "%", sep="")
 }
@@ -144,20 +144,24 @@ ml %>%
   ggplot(aes(Cohort, Percentage, fill = ELAS)) +
   geom_col(alpha = 0.7) +
   geom_text(aes(label = paste0(Percentage, "%")),
+            size = 4,
             alpha = 0.5,
             position = position_stack(vjust = 0.6)) +
-  scale_fill_brewer(palette = "Paired")  +
+  geom_vline(xintercept = 1:13 - 0.5, color = "gray90") +
+  geom_hline(yintercept = 0:3 * 5, color = "gray90") +
+  scale_fill_manual(values = c("steelblue", "dodgerblue4", "darkorange", "yellow"))+
   theme_minimal() +
   labs(fill = "ELAS: ") +
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
-        axis.title.y=element_blank()) +
+        axis.text.x=element_text(size=14),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank()) +
   guides(fill = guide_legend(title = "", nrow = 1, byrow = TRUE)) +
   coord_flip() +
   guides(fill = guide_legend(reverse=TRUE)) +
-  coord_polar() +
-  panel_border(remove = TRUE)
+  coord_curvedpolar() 
 ```
 
 
@@ -294,7 +298,7 @@ Please refer to [this slide](https://docs.google.com/presentation/d/12GjkZb5EjsP
  - PTEL: EL in grades 3-12 who has been enrolled as an EL for 4-5 years but has not achieved English proficiency level nor ELA grade-specific standard in State tests 
  - LTEL: EL being enrolled as an EL for 6 or more years without making progress 
 
-Below is a breakdown of the proportions of the five EL Typology groups at SFUSD, as of `r Sys.Date()`:
+Below is a breakdown of the proportions of the five EL Typology groups at SFUSD:
 
 ```{r fig.height = 2, fig.width = 8}
 mlml %>%
@@ -451,7 +455,7 @@ Note that for the following three cohorts, high schools, middle schools, and K-8
 
 ```{r}
 mlml %>%
-  filter(grepl("HS", School)) %>%
+  filter(Cohort == "HS") %>%
   group_by(School, Typology) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -463,7 +467,7 @@ mlml %>%
 
 ```{r}
 mlml %>%
-  filter(grepl("MS", School)) %>%
+  filter(Cohort == "MS") %>%
   group_by(School, Typology) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -475,7 +479,7 @@ mlml %>%
 
 ```{r fig.height = 3.5}
 mlml %>%
-  filter(grepl("K-8", School)) %>%
+  filter(Cohort == "K-8") %>%
   group_by(School, Typology) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -485,11 +489,11 @@ mlml %>%
 ```
 
 
-For the following two cohorts, elementary and early elementary schools, the bars are ordered by the first proportion - the proportion of Newcomers from the highest to the lowest:
+For the following two cohorts, elementary and pre-elementary schools, the bars are ordered by the first proportion - the proportion of Newcomers from the highest to the lowest:
 
 ```{r fig.height = 12, fig.width = 9}
 mlml %>%
-  filter(grepl(" ES", School)) %>%
+  filter(Cohort == "ES") %>%
   group_by(School, Typology) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
@@ -501,7 +505,7 @@ mlml %>%
 
 ```{r fig.height = 3.5}
 mlml %>%
-  filter(grepl("EES", School)) %>%
+  filter(Cohort == "PreES") %>%
   group_by(School, Typology) %>%
   mutate(Enrollment = n()) %>% 
   ungroup() %>% 
