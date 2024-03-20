@@ -46,7 +46,7 @@ checkna <- function(df){
 /* Whole document: */
 body{
   font-family: Helvetica;
-  font-size: 12pt;
+  font-size: 14pt;
 }
 ```
 
@@ -142,25 +142,22 @@ ml %>%
   select(Cohort, Percentage, ELAS) %>% 
   unique() %>% 
   ggplot(aes(Cohort, Percentage, fill = ELAS)) +
-  geom_col(alpha = 0.7) +
+  geom_col() +
   geom_text(aes(label = paste0(Percentage, "%")),
             size = 4,
             alpha = 0.5,
             position = position_stack(vjust = 0.6)) +
-  geom_vline(xintercept = 1:13 - 0.5, color = "white") +
-  geom_hline(yintercept = 0:3 * 5, color = "white") +
+  geom_vline(xintercept = 1:13 - 0.5, color = "grey90") +
+  geom_hline(yintercept = 0:3 * 5, color = "grey90") +
   scale_fill_manual(values = c("steelblue", "dodgerblue4", "darkorange", "yellow"))+
   theme_minimal() +
-  labs(fill = "ELAS: ") +
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.text.x=element_text(face=1, color="grey40", hjust=0, size=14),
         axis.title.y=element_blank(),
         axis.text.y=element_blank()) +
-  guides(fill = guide_legend(title = "", nrow = 1, byrow = TRUE)) +
-  coord_flip() +
-  guides(fill = guide_legend(reverse=TRUE)) +
+  guides(fill = guide_legend(title = "ELAS: ", nrow = 1, byrow = TRUE)) +
   coord_curvedpolar() 
 ```
 
@@ -342,7 +339,7 @@ mlml %>%
   select(Grade, Percentage, Typology) %>% 
   unique() %>% 
   ggplot(aes(Grade, Percentage, fill = Typology)) +
-  geom_col(alpha = 0.7) +
+  geom_col() +
   geom_text(aes(label = paste0(Percentage, "%"), 
                 vjust=rep(c(0.5, -0.5), length.out=length(Percentage))),
             alpha = 0.5,
