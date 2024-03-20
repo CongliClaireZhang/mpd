@@ -154,7 +154,7 @@ ml %>%
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
-        axis.text.x=element_text(face=1, color="grey40", hjust=0, size=14),
+        axis.text.x=element_text(face=1, color="grey40", hjust=0.55, size=14),
         axis.title.y=element_blank(),
         axis.text.y=element_blank()) +
   guides(fill = guide_legend(title = "ELAS: ", nrow = 1, byrow = TRUE)) +
@@ -486,7 +486,7 @@ mlml %>%
 ```
 
 
-For the following two cohorts, elementary and pre-elementary schools, the bars are ordered by the first proportion - the proportion of Newcomers from the highest to the lowest:
+For the following two cohorts, elementary and pre-elementary schools, the bars are **ordered by the first proportion - the proportion of Newcomers** from the highest to the lowest:
 
 ```{r fig.height = 12, fig.width = 9}
 mlml %>%

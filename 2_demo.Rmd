@@ -52,34 +52,34 @@ body{
 
 
 ```{r}
-# ml <- read_xlsx(here("./data/ml.xlsx")) %>%
-#   mutate(elas = factor(elas,
-#                        levels = c("English or American Sign Language Only", 
-#                                   "Initial Fluent English Proficient", 
-#                                   "Reclassified Fluent English Proficient",
-#                                   "English Learner", 
-#                                   "Adult English Learner"),
-#                        labels = c("EO",
-#                                   "IFEP", 
-#                                   "RFEP", 
-#                                   "EL", 
-#                                   "EL"))) %>% 
-#   drop_na() %>% 
-#   mutate(typo = factor(typo,
-#                        levels = c("EL 6+ Yrs LTEL", 
-#                                   "EL 4-5 Yrs Potential LTEL", 
-#                                   "EL 4+ Yrs On Track", 
-#                                   "EL 0-3 Yrs", 
-#                                   "EL 0-3 Yrs Newcomer"),
-#                        labels = c("LTEL", 
-#                                   "PLTEL", 
-#                                   "ELOT", 
-#                                   "NewEL", 
-#                                   "Newcomer")),
-#          elas = ifelse())
-#   rename(School = sch,
-#          ELAS = elas,
-#          Grade = grade,
-#          Typology = typo)
+ml <- read_xlsx(here("./data/ml.xlsx")) %>%
+  mutate(elas = factor(elas,
+                       levels = c("English or American Sign Language Only",
+                                  "Initial Fluent English Proficient",
+                                  "Reclassified Fluent English Proficient",
+                                  "English Learner",
+                                  "Adult English Learner"),
+                       labels = c("EO",
+                                  "IFEP",
+                                  "RFEP",
+                                  "EL",
+                                  "EL"))) %>%
+  drop_na() %>%
+  mutate(typo = factor(typo,
+                       levels = c("EL 6+ Yrs LTEL",
+                                  "EL 4-5 Yrs Potential LTEL",
+                                  "EL 4+ Yrs On Track",
+                                  "EL 0-3 Yrs",
+                                  "EL 0-3 Yrs Newcomer"),
+                       labels = c("LTEL",
+                                  "PLTEL",
+                                  "ELOT",
+                                  "NewEL",
+                                  "Newcomer")),
+         elas = ifelse())
+  rename(School = sch,
+         ELAS = elas,
+         Grade = grade,
+         Typology = typo)
 ```
 
