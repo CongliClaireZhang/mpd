@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       fig.width = 8)
 
-pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly, cowplot, geomtextpath)
+pacman::p_load(tidyverse, janitor, readxl, writexl, here, plotly, cowplot, geomtextpath, flextable)
 percentage <- function(x){
   paste(round(100*x, 2), "%", sep="")
 }
@@ -154,7 +154,7 @@ ml %>%
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
-        axis.text.x=element_text(face=1, color="grey40", hjust=0.55, size=14),
+        axis.text.x=element_text(face=2, color="grey40", hjust=0.55, size=14),
         axis.title.y=element_blank(),
         axis.text.y=element_blank()) +
   guides(fill = guide_legend(title = "ELAS: ", nrow = 1, byrow = TRUE)) +
@@ -509,6 +509,62 @@ mlml %>%
   select(School, Typology, Enrollment) %>% 
   unique() %>% 
   plot_typo_3()
+```
+
+
+
+
+# A glossary of the terms used on this page
+
+  
+  
+```{r, results="asis", ft.align="left"}
+data.frame(ELAS = c("EO",
+                    "IFEP",
+                    "RFEP",
+                    "LTEL",
+                    "PLTEL",
+                    "ELOT",
+                    "NewEL",
+                    "Newcomer"),
+           Description = c("English or American Sign Language Only",
+                           "Initial Fluent English Proficient",
+                           "Reclassified Fluent English Proficient",
+                           "EL 6+ Yrs LTEL",
+                           "EL 4-5 Yrs Potential LTEL",
+                           "EL 4+ Yrs On Track",
+                           "EL 0-3 Yrs",
+                           "EL 0-3 Yrs Newcomer"),
+               EL = c("N",
+                      "N",
+                      "N",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y"),
+           EverEL = c("N",
+                      "N",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y"),
+     Multilingual = c("N",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y",
+                      "Y")
+           ) %>% 
+  flextable() %>% 
+  bold(part = "header") %>% 
+  set_table_properties(width = 0.8, layout = "autofit") %>% 
+  bg(bg = "cadetblue3", part = "header") %>% 
+  bg(bg = "aliceblue", part = "body")
 ```
 
 
