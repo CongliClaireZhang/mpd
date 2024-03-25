@@ -1,5 +1,8 @@
 ---
 title: "SFUSD Multilingual Learners"
+output: 
+  html_document:
+    theme: flatly
 ---
 
 ```{r setup, include=FALSE}
@@ -40,14 +43,6 @@ checkna <- function(df){
 
 ```{r, layout="l-screen-inset shaded", include = TRUE}
 
-```
-
-```{css, echo=FALSE}
-/* Whole document: */
-body{
-  font-family: Helvetica;
-  font-size: 14pt;
-}
 ```
 
 

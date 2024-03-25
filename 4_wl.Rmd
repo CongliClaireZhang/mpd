@@ -20,12 +20,6 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```
 
-```{css, echo=FALSE}
-/* Whole document: */
-body{
-  font-family: Helvetica;
-  font-size: 14pt;
-}
-```
+
 
 The Long-Term Goal of Multilingualism and Multiliteracy for Multiligual Learners

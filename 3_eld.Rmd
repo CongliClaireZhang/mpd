@@ -20,13 +20,5 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```
 
-```{css, echo=FALSE}
-/* Whole document: */
-body{
-  font-family: Helvetica;
-  font-size: 14pt;
-}
-```
-
 
 Paving the path to academic success for Multiligual Learners

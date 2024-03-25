@@ -42,13 +42,10 @@ checkna <- function(df){
 
 ```
 
-```{css, echo=FALSE}
-/* Whole document: */
-body{
-  font-family: Helvetica;
-  font-size: 14pt;
-}
-```
+
+Demographic characteristics of EL population provide a foundation for our understanding of this unique student group. In turn, they help us uncover ELs' strengths and needs to guide us in the process of developing policy, designing programs, and day-to-day education practice. 
+
+The State of California Department of Education looks at 12 student groups in addition to ELs as posted on [California School Dashboard](https://www.caschooldashboard.org/) for school accountability purpose: African American, American Indian, Asian, Filipino, Forster Youth, Hispanic, Homeless, Two or More Races, Pacific Islander, Socioeconomically Disadvantaged, Students with Disabilities, and White. We adapt this grouping strategy into our understanding of our EL population and use it as a guidance to present student demographics data.
 
 
 ```{r}
@@ -84,6 +81,9 @@ ml <- read_xlsx(here("./data/ml.xlsx")) %>%
          Grade = grade,
          Typology = typo)
 ```
+
+
+
 
 
 # A glossary of the terms used on this page
