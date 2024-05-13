@@ -49,37 +49,24 @@ The State of California Department of Education looks at 12 student groups in ad
 
 
 ```{r}
-ml <- read_xlsx(here("./data/ml.xlsx")) %>%
-  mutate(elas = factor(elas,
-                       levels = c("English or American Sign Language Only",
-                                  "Initial Fluent English Proficient",
-                                  "Reclassified Fluent English Proficient",
-                                  "English Learner",
-                                  "Adult English Learner"),
-                       labels = c("EO",
-                                  "IFEP",
-                                  "RFEP",
-                                  "EL",
-                                  "EL"))) %>%
-  drop_na() %>%
-  mutate(typo_desc = typo,
-         typo = factor(typo_desc,
-                       levels = c("EL 6+ Yrs LTEL",
-                                  "EL 4-5 Yrs Potential LTEL",
-                                  "EL 4+ Yrs On Track",
-                                  "EL 0-3 Yrs",
-                                  "EL 0-3 Yrs Newcomer"),
-                       labels = c("LTEL",
-                                  "PLTEL",
-                                  "ELOT",
-                                  "NewEL",
-                                  "Newcomer")),
-         elas = case_when(elas == "EL" ~ typo, 
-                          .default = elas)) %>% 
+ml <- read_xlsx(here("./data/ml.xlsx")) %>% 
+  mutate(elas_code = factor(elas_code, 
+                            levels = c("EO", "IFEP", "RFEP", "EL")),
+         typo_code = factor(typo_code,
+                            levels = c("LTEL", "PLTEL", "ELOT", "NewEL", "Newcomer")),
+         grade = factor(grade,
+                        c("PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))) %>% 
   rename(School = sch,
-         ELAS = elas,
+         ELAS = elas_code,
          Grade = grade,
-         Typology = typo)
+         Typology = typo_code,
+         Cohort = cohort)
+# mytable1(ml$Grade)
+
+# EL only
+mlml <- ml %>% 
+  filter(ELAS == "EL") %>% 
+  drop_na() # drop N=10 ELs who miss typology for visualization purposes
 ```
 
 

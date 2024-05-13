@@ -1,5 +1,5 @@
 ---
-title: "Multilingual Development of Multiligual Learners"
+title: "Multilingual Development of MLs"
 ---
 
 ```{r setup, include=FALSE}
@@ -20,6 +20,3 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```
 
-
-
-The Long-Term Goal of Multilingualism and Multiliteracy for Multiligual Learners

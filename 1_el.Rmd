@@ -47,54 +47,33 @@ checkna <- function(df){
 
 
 ```{r}
-ml <- read_xlsx(here("./data/ml.xlsx")) %>%
-  mutate(elas = factor(elas,
-                       levels = c("English or American Sign Language Only", 
-                                  "Initial Fluent English Proficient", 
-                                  "Reclassified Fluent English Proficient",
-                                  "English Learner", 
-                                  "Adult English Learner"),
-                       labels = c("EO",
-                                  "IFEP", 
-                                  "RFEP", 
-                                  "EL", 
-                                  "EL")),
+ml <- read_xlsx(here("./data/ml.xlsx")) %>% 
+  mutate(elas_code = factor(elas_code, 
+                            levels = c("EO", "IFEP", "RFEP", "EL")),
+         typo_code = factor(typo_code,
+                            levels = c("LTEL", "PLTEL", "ELOT", "NewEL", "Newcomer")),
          grade = factor(grade,
-                        levels = c("PK", "TK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "5th YR Senior"),
-                        labels = c("PK-K", "PK-K", "PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "12")),
-         Cohort = case_when(grepl("HS", sch) ~ "HS",
-                            grepl("MS", sch) ~ "MS",
-                            grepl("K-8", sch) ~ "K-8",
-                            grepl(" ES", sch) ~ "ES",
-                            grepl("EES|Pre-K|PreK|EED|Prek", sch) ~ "PreES")) %>% 
-  # foo <- ml %>% select(Cohort, sch) %>% unique()
-  drop_na() %>% 
+                        c("PK-K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))) %>% 
   rename(School = sch,
-         ELAS = elas,
+         ELAS = elas_code,
          Grade = grade,
-         Typology = typo)
+         Typology = typo_code,
+         Cohort = cohort)
 # mytable1(ml$Grade)
 
 # EL only
 mlml <- ml %>% 
   filter(ELAS == "EL") %>% 
-  mutate(Typology = factor(Typology,
-                       levels = c("EL 6+ Yrs LTEL", 
-                                  "EL 4-5 Yrs Potential LTEL", 
-                                  "EL 4+ Yrs On Track", 
-                                  "EL 0-3 Yrs", 
-                                  "EL 0-3 Yrs Newcomer"),
-                       labels = c("LTEL", 
-                                  "PLTEL", 
-                                  "ELOT", 
-                                  "NewEL", 
-                                  "Newcomer")))
+  drop_na() # drop N=10 ELs who miss typology for visualization purposes
+
 ```
 
 
-At SFUSD, more than half of our students live in households with a home language other than English, which include English Learner students (ELs), Re-designated Fluent English Proficient students (RFEPs), and Initial Fluent English Proficient students (IFEPs)^[Journey from EL to RFEP: https://drive.google.com/file/d/1XUxLCgTnHKA_DfFEQrCGvngFmXooIBx4/view]. In contrast, English or American Sign Language Only students (EOs) are less than half.
+At SFUSD, more than half of our students live in households with a home language other than English. These students include English Learner students (ELs), Re-designated Fluent English Proficient students (RFEPs), and Initial Fluent English Proficient students (IFEPs)^[Journey from EL to RFEP: https://drive.google.com/file/d/1XUxLCgTnHKA_DfFEQrCGvngFmXooIBx4/view]. In contrast, English or American Sign Language Only students (EOs) are less than half. 
 
-As of `r Sys.Date()`^[Data source: SFUSD Synergy data system], there are a total of `r nrow(mlml)` ELs actively enrolled in SFUSD, making up to `r percentage(nrow(mlml)/nrow(ml))` of the student population^[Student population: the total of students in SFUSD schools excluding Charter schools and Central Enrollment students who have yet enroll in a particular school]. Below is a breakdown of the proportions of four major English Language Acquisition Status, or ELAS: EL, RFEP, IFEP, and EO.
+As of `r Sys.Date()`^[Data source: SFUSD Synergy data system], there are a total of `r nrow(mlml)` ELs actively enrolled in SFUSD, making up to `r percentage(nrow(mlml)/nrow(ml))` of the student population^[Student population: to present clean data, we currently include students in SFUSD schools excluding Charter schools and Central Enrollment students who have yet enroll in a particular school]. Below is a breakdown of the proportions of four major English Language Acquisition Status, or ELAS: EL, RFEP, IFEP, and EO. A glossary of these terms is at the bottom of this page.
+
+Note that some SFUSD employees may have access to school-specific, student-level data files stored in [Google Drive folders](https://drive.google.com/drive/folders/1DVe6y3D96hBSV-BDHEUD7Zv6ALOjwDyV). If that is of interests to you, please log in with your SFUSD account to find it out.
 
 ```{r fig.height = 2, fig.width = 8}
 ml %>%
