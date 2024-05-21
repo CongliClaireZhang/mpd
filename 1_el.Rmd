@@ -486,6 +486,7 @@ mlmlplot %>%
   plot_typo_3()
 ```
 
+
 # A glossary of the terms used on this page
 
 

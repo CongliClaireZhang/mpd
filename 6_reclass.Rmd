@@ -1,0 +1,317 @@
+---
+title: "Reclassification of Multilingual Learners"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      R.options = list(width = 90),
+                      include = TRUE,
+                      fig.width = 10)
+
+pacman::p_load(tidyverse, here, janitor, readr, readxl, writexl, lubridate, shiny, modelsummary, gtsummary, flextable, kableExtra)
+percentage <- function(x){
+  paste(round(100*x, 2), "%", sep="")
+}
+
+mytable1 <- function(x){
+  addmargins(table(x, exclude = NULL, deparse.level = 0))
+}
+
+mytable2 <- function(x, y){
+  addmargins(table(x, y, exclude = NULL, deparse.level = 0))
+}
+
+checkdup <- function(df){
+  df %>% group_by(student_no) %>% filter(n() > 1) %>% ungroup()
+}
+
+checkna <- function(df){
+  sapply(df, function(x){sum(is.na(x))})
+}
+
+checkstu <- function(df){
+  df %>% 
+    select(student_no) %>% 
+    unique() %>% 
+    nrow()
+}
+```
+
+
+```{r}
+# if (!require('devtools')) install.packages('devtools')
+# devtools::install_github('rstudio/leaflet')
+```
+
+## Trends of RFEP rates at SFUSD
+
+**Preface note for internal users:**
+
+Huge thanks to RPA department for sharing [this historical data](https://docs.google.com/spreadsheets/d/1DH-XQhqJgGAiEODPzzp9F_R9xhxuW0WW/edit#gid=1307837495).
+
+The data is in long format. Some tips for filtering the data as needed:
+
+ - Schlevel: 001= Gr K-12; 4ES=Gr K-5; 7MS=Gr 6-8; 8HS=Gr 9-12. K8 schools get 2 reports, one for K-5 and one for 6-8.
+
+ - SCHNAME: In additiona to the usual school names, there are also SFUSD and Cohort names. All the SFUSD schools are divided into 7 school cohorts, each one is supervised by one assistant superintendent. Elementary and K8 schools are cohorts 1 to 5, middle schools are cohort 6, and high schools are cohort 7. 
+
+ - GroupID	1=school/cohort/districtwide; 3=resolvedethnicity; 5=sped; 6=**low-ses**; 7=**focal ethnicity groups** (arabic/chinese/filipino/hispanic/vietnamese); 8=home language; 10=foster youth; 11=homeless; 15=long-term EL
+ 
+
+Currently, only three levels of data presentation are available on this page: SFUSD, school levels (elementary, middle, and high), and sites. Each chapter sheds some lights on the RFEP rates of focused student groups on the [RFEP Rate Data Sheet in Data Disk](https://drive.google.com/drive/recent). 
+
+ - Why not cohort level? Some cohorts are divided into two groups in some years, e.g., Cohort 3, 4, 7 had two RFEP rates in years prior to 2022-23. In other words, no unique RFEP rate by cohort by year in the original data and it's not worth the time to dig into historical data and recode. 
+ 
+ - My next goal is data managing on the RFEP rates of major home language groups and adding to each chapter so it would be informative to [language pathway](https://www.sfusd.edu/learning/language-pathways-language) educators.
+ 
+For now, the format of this analysis is static html file, which doesn't allow interactive dashboard plots. Therefore, site specific plots are provided as needed. Please reach out to MPD statistician.
+
+## District-wise
+
+```{r}
+sfusd <- read_xlsx(here("./data/rfep_rate_sfusd.xlsx"))
+```
+
+```{r}
+sfusd_wide <- sfusd %>% 
+  select(group, year, rfep_rate) %>% 
+  arrange(year) %>% 
+  pivot_wider(names_from = year, values_from = rfep_rate)
+
+sfusd_wide %>%
+  rename(Group = group) %>% 
+  flextable() %>% 
+  width(j = 1, width = 1.5)
+```
+
+
+```{r}
+sfusd %>% 
+  filter(group %in% c("SFUSD",
+                      "White",
+                      "Arabic EL",
+                      "Chinese EL",
+                      "Filipino EL",
+                      "Hispanic/Latino EL",
+                      "Vietnamese EL")) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of SFUSD RFEP rate by focal ethinicity group in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Dark2") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r, fig.width = 9}
+sfusd %>% 
+  filter(group %in% c("SFUSD",
+                      "SPED")) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of SFUSD RFEP rate of dually identified ELs in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Set1") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+## RFEP rate at different school levels
+
+```{r}
+level <- read_xlsx(here("./data/rfep_rate_level.xlsx"))
+```
+
+
+```{r}
+level_wide <- level %>% 
+  filter(group %in% c("SFUSD", "4ES", "7MS", "8HS")) %>% 
+  select(year, group, rfep_rate) %>% 
+  arrange(year) %>% 
+  pivot_wider(names_from = year, values_from = rfep_rate)
+
+level_wide %>%
+  rename(Group = group) %>% 
+  flextable() 
+```
+
+
+```{r}
+level %>% 
+  filter(group %in% c("4ES",
+                      "7MS",
+                      "8HS",
+                      "SFUSD")) %>% 
+  mutate(group = case_when(group == "4ES" ~ "Elementary School", 
+                           group == "7MS" ~ "Middle School",
+                           group == "8HS" ~ "High School",
+                           group == "SFUSD" ~ "SFUSD")) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of SFUSD RFEP rate by school level in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Dark2") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r}
+level %>% 
+  filter(schlevel == "4ES") %>% 
+  filter(group %in% c("4ES",
+                      "White",
+                      "Arabic EL",
+                      "Chinese EL",
+                      "Filipino EL",
+                      "Hispanic/Latino EL",
+                      "Vietnamese EL")) %>% 
+  mutate(group = ifelse(group == "4ES", "Elementary School Overall", group)) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of elementary school RFEP rate by focal ethnicity group in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Dark2") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r}
+level %>% 
+  filter(schlevel == "7MS") %>% 
+  filter(group %in% c("7MS",
+                      "White",
+                      "Arabic EL",
+                      "Chinese EL",
+                      "Filipino EL",
+                      "Hispanic/Latino EL",
+                      "Vietnamese EL")) %>% 
+  mutate(group = ifelse(group == "7MS", "Middle School Overall", group)) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of middle school RFEP rate by focal ethnicity group in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Dark2") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+```{r}
+level %>% 
+  filter(schlevel == "8HS") %>% 
+  filter(group %in% c("8HS",
+                      "White",
+                      "Arabic EL",
+                      "Chinese EL",
+                      "Filipino EL",
+                      "Hispanic/Latino EL",
+                      "Vietnamese EL")) %>% 
+  mutate(group = ifelse(group == "8HS", "High School Overall", group)) %>% 
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of high school RFEP rate by focal ethnicity group in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Dark2") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+
+```{r, fig.width = 9}
+level %>% 
+  filter(schlevel == "4ES") %>% 
+  filter(group %in% c("4ES",
+                      "SPED")) %>% 
+  mutate(group = ifelse(group == "4ES", "Elementary School Overall", group)) %>%
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of elementary school RFEP rate of dually identified ELs in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Set1") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+
+```{r, fig.width = 9}
+level %>% 
+  filter(schlevel == "7MS") %>% 
+  filter(group %in% c("7MS",
+                      "SPED")) %>% 
+  mutate(group = ifelse(group == "7MS", "Middle School Overall", group)) %>%
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of middle school RFEP rate of dually identified ELs in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Set1") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+
+```{r, fig.width = 9}
+level %>% 
+  filter(schlevel == "8HS") %>% 
+  filter(group %in% c("8HS",
+                      "SPED")) %>% 
+  mutate(group = ifelse(group == "8HS", "High School Overall", group)) %>%
+  ggplot(aes(year, rfep_rate_num, color = group)) +
+  geom_point(size = 2.5) +
+  geom_line(aes(group = group), size = 0.8) +
+  theme_bw(base_size = 14) +
+  labs(title = "Trend of high school RFEP rate of dually identified ELs in nine years",
+       x = "School Year",
+       y = "RFEP Rate",
+       color = "") +
+  scale_color_brewer(palette = "Set1") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+## RFEP rate by sites
+
+Note that the school names were not consistent for some unique school IDs in the original data due to the historical nature of change in school names. For interpretation purposes, convert historical school names to those in SY 2023-24. Consequently, closed schools are not included in this converted data.
+
+Also some schools, e.g., K-8 schools, receive two reports at ES and MS level from Data Disk. For interpretation purposes, their RFEP rate was recalculated as sum of RFEPs/(sum of RFEPs and ELs) at each school year.
+
+```{r}
+site_wide <- read_xlsx(here("./data/rfep_rate_site_wide.xlsx"))
+
+site_wide %>%
+  rename(School = group,
+         SchoolID = sch_no) %>% 
+  flextable() %>% 
+  width(j = 2, width = 1.7) 
+```
+
+
