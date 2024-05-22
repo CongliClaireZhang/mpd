@@ -258,7 +258,7 @@ level %>%
   scale_y_continuous(labels = scales::percent)
 ```
 
-
+ideas to 
 
 ```{r, fig.width = 9}
 level %>% 
