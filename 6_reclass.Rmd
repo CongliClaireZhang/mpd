@@ -99,7 +99,7 @@ sfusd %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of SFUSD RFEP rate by focal ethinicity group in nine years",
+  labs(title = "SFUSD RFEP rate by focal ethinicity group",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -116,7 +116,7 @@ sfusd %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of SFUSD RFEP rate of dually identified ELs in nine years",
+  labs(title = "SFUSD RFEP rate of ELs with IEPs",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -158,7 +158,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of SFUSD RFEP rate by school level in nine years",
+  labs(title = "SFUSD RFEP rate by school level",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -182,7 +182,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of elementary school RFEP rate by focal ethnicity group in nine years",
+  labs(title = "Elementary school RFEP rate by focal ethnicity group",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -206,7 +206,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of middle school RFEP rate by focal ethnicity group in nine years",
+  labs(title = "Middle school RFEP rate by focal ethnicity group",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -230,7 +230,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of high school RFEP rate by focal ethnicity group in nine years",
+  labs(title = "High school RFEP rate by focal ethnicity group",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -250,7 +250,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of elementary school RFEP rate of dually identified ELs in nine years",
+  labs(title = "Elementary school RFEP rate of ELs with IEPs",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -270,7 +270,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of middle school RFEP rate of dually identified ELs in nine years",
+  labs(title = "Middle school RFEP rate of ELs with IEPs",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
@@ -290,7 +290,7 @@ level %>%
   geom_point(size = 2.5) +
   geom_line(aes(group = group), size = 0.8) +
   theme_bw(base_size = 14) +
-  labs(title = "Trend of high school RFEP rate of dually identified ELs in nine years",
+  labs(title = "High school RFEP rate of ELs with IEPs",
        x = "School Year",
        y = "RFEP Rate",
        color = "") +
